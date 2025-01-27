@@ -10,7 +10,7 @@ Product.init(
       allowNull: false,
       primaryKey: true,
       type: DataTypes.UUID,
-      defactValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4
        
     },
     ProductName: {

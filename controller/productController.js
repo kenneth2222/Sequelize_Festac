@@ -1,3 +1,4 @@
+const e = require('express');
 const productModel = require('../models/product');
 const storeModel = require('../models/store');
 
@@ -75,3 +76,50 @@ exports.getAllProductBelongingToAStore = async (req, res) => {
         });
     }
 }   
+
+exports.updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { ProductName, ProductQuantity, ProductAmount } = req.body;
+        const product = await productModel.findOne({ where: { id: id } });
+
+        if (!product) {
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }
+
+        await product.update({ ProductName, ProductQuantity, ProductAmount });
+        res.status(200).json({
+            message: "Product updated successfully",
+            data: product
+        });
+    } catch (error) {     
+        res.status(500).json({
+            message: "Internal server error",
+            error: error.message
+        });
+    }    
+}
+
+exports.deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const product = await productModel.findOne({ where: { id: id } });
+
+        if (!product) {           
+            return res.status(404).json({
+                message: "Product not found"
+            });
+        }        
+        await product.destroy();
+        res.status(200).json({
+            message: "Product deleted successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error",
+            error: error.message
+        });
+    }
+}
