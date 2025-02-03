@@ -1,25 +1,53 @@
-'use strict';
-const { Model } = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
+const { Sequelize, DataTypes, Model } = require("sequelize");
+const { sequelize } = require("../database/sequelize");
+const Task = require("./task");
+const Status = require("./status");
+
+class User extends Model {}
+
+User.init(
+  {
+    // Model attributes are defined here
+    id: {
+      allowNull: false,
+      primaryKey: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+    },
+
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+
+    role: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    // Other model options go here
+    sequelize, // We need to pass the connection instance
+    modelName: "User", // We need to choose the model name
+    tableName: "users",
   }
-  User.init({
-    firstName: DataTypes.STRING,
-    lastName: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING,
-    age: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'User',
-  });
-  return User;
-};
+);
+
+User.hasMany(Task, { foreignKey: 'userId',
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE'
+ })
+
+ Task.belongsTo(User, { foreignKey: "userId" });
+
+// User.hasMany(Status, { foreignKey: 'userId',
+//     onDelete: 'CASCADE',
+//     onUpdate: 'CASCADE'
+//  })
+
+// Product.hasOne(Store, { foreignKey: 'id',
+//     onDelete: 'CASCADE',
+//     onUpdate: 'CASCADE'
+//  })
+
+module.exports = User;
